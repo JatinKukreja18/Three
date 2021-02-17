@@ -6,13 +6,44 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="main.css">
 	</head>
+	<script>
+		window.addEventListener('mousemove',function(e){
+			console.log(e.y /window.innerHeight * 100);
+			const xoffset = e.x /window.innerWidth * 100;
+			const yoffset = e.y /window.innerHeight * 100;
+			const minLeft = 32;
+			const maxLeft = 64;
+			const maxTop= 18;
+			const minTop= 3;
+			if((xoffset * maxLeft )/100 + minLeft < maxLeft){
+				document.querySelector('.pupil1').style.left = ((xoffset * maxLeft )/100 + minLeft) + '%';
+				document.querySelector('.pupil2').style.left = ((xoffset * maxLeft )/100 + minLeft) + '%';
+				// document.querySelector('.pupil').style.left = (xoffset * maxLeft )/100 + '%';
+			}
+			if((yoffset * maxTop )/100 + minTop < maxTop){
+				document.querySelector('.pupil1').style.top = ((yoffset * maxTop )/100 + minTop) + '%';
+				document.querySelector('.pupil2').style.top = ((yoffset * maxTop )/100 + minTop) + '%';
+			}
 
+			if(yoffset < 50){
+				document.querySelector('.raw-overlay').style.opacity = 1 - yoffset / 100;
+			}else{
+				document.querySelector('.raw-overlay').style.opacity = 0
+			}
+		})
+	</script>
 	<body>
-		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - FBXLoader<br />
-			Character and animation from <a href="https://www.mixamo.com/" target="_blank" rel="noopener">Mixamo</a>
+		<div class="raw-overlay"></div>
+		<div class="eyeballs">
+			<div class="lefteye">
+				<img src="./assets//Eye ball_2x.png" class="pupil1" alt="" srcset="">
+				<img src="./assets/eye left_2x.png" alt="" srcset="">
+			</div>
+			<div class="righteye">
+				<img src="./assets//Eye ball_2x.png" class="pupil2" alt="" srcset="">
+				<img src="./assets/Eye right 2x.png" alt="" srcset="">
+			</div>
 		</div>
-
 		<script type="module">
 
 			import * as THREE from './build/three.module.js';
@@ -21,8 +52,9 @@
 
 			import { OrbitControls } from './jsm/controls/OrbitControls.js';
 			import { FBXLoader } from './jsm/loaders/FBXLoader.js';
+			import { FirstPersonControls } from './jsm/controls/FirstPersonControls.js';
 
-			let camera, scene, renderer, stats;
+			let camera, scene, renderer, stats, controls;
 
 			const clock = new THREE.Clock();
 
@@ -36,19 +68,26 @@
 				const container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
-				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
-				camera.position.set( 100, 200, 300 );
-
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+				// camera.position.set( 400, 200, 0 );
+				camera.position.x = 600;
+				camera.position.y = 50;
+				camera.position.z = 120;
+				// camera.up.set(0,2,0)
+				// camera.lookAt(100,100,10)
+				// camera.rotation.z = 100;
+				// camera.rotation.x = Math.pi / 2;
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0xa0a0a0 );
 				// scene.fog = new THREE.Fog( 0xa0a0a0, 200, 1000 );
 
-				const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
-				hemiLight.position.set( 0, 200, 0 );
-				scene.add( hemiLight );
-
+				// const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+				// hemiLight.position.set( 0, 200, 0 );
+				// scene.add( hemiLight );
+				// const hlight = new THREE.AmbientLight (0xffffff,2);
+				// scene.add(hlight);
 				const dirLight = new THREE.DirectionalLight( 0xffffff );
-				dirLight.position.set( 0, 200, 100 );
+				dirLight.position.set( 0, 200, 10 );
 				dirLight.castShadow = true;
 				dirLight.shadow.camera.top = 180;
 				dirLight.shadow.camera.bottom = - 100;
@@ -71,12 +110,13 @@
 
 				// model
 				const loader = new FBXLoader();
-				loader.load( 'model/Terrrain sample _1.fbx', function ( object ) {
+				loader.load( 'model/Terrain_6.fbx', function ( object ) {
 
 					// mixer = new THREE.AnimationMixer( object );
 
 					// const action = mixer.clipAction( object.animations[ 0 ] );
 					// action.play();
+					object.rotation.y = 40;
 
 					object.traverse( function ( child ) {
 
@@ -99,9 +139,22 @@
 				renderer.shadowMap.enabled = true;
 				container.appendChild( renderer.domElement );
 
-				const controls = new OrbitControls( camera, renderer.domElement );
-				controls.target.set( 0, 100, 0 );
-				controls.update();
+				controls = new OrbitControls( camera, renderer.domElement );
+				controls.maxPolarAngle = Math.PI / 2;
+				controls.minDistance = 400
+				controls.maxDistance = 500
+				controls.target.y = 50;
+				controls.target.x = 100;
+				// camera.autoRotate = true;
+				// controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+				// controls.dampingFactor = 0.05;
+
+				// controls.screenSpacePanning = false;
+
+				// controls.minDistance = 100;
+				// controls.maxDistance = 500;
+
+				// controls.maxPolarAngle = Math.PI / 2;
 
 				window.addEventListener( 'resize', onWindowResize );
 
@@ -129,6 +182,7 @@
 				const delta = clock.getDelta();
 
 				// if ( mixer ) mixer.update( delta );
+				controls.update();
 
 				renderer.render( scene, camera );
 

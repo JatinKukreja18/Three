@@ -1,6 +1,6 @@
 body {
 	margin: 0;
-	background-color: #000;
+	/* background-color: #000; */
 	color: #fff;
 	font-family: Monospace;
 	font-size: 13px;
@@ -61,7 +61,7 @@ a, button, input, select {
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
-	background: rgba(0,0,0,0.7);
+	/* background: rgba(0,0,0,0.7); */
 }
 
 	#overlay button {
@@ -81,4 +81,41 @@ a, button, input, select {
 	background-color: #f00;
 	margin-top: 20px;
 	padding: 10px;
+}
+
+.eyeballs{
+	position: fixed;
+	bottom: 40%;
+	left: 0;
+	right: 0;
+	margin: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.righteye img,
+.lefteye img{
+	width: 100%;
+}
+.righteye,
+.lefteye{
+	width: 100px;
+	position: relative;
+	margin: 0 20px;
+}
+.righteye .pupil2,
+.lefteye .pupil1{
+	width: 38px;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+	transform: translateX(-50%);
+}
+.raw-overlay{
+	position: fixed;
+	pointer-events: none;
+	background-image: linear-gradient(#ff0000c9 ,transparent);
+	width: 100vw;
+	height: 100vh;
+	transition: .2s;
 }
