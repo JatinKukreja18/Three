@@ -9,6 +9,9 @@
 	<script>
 		window.addEventListener('mousemove',initiateInteraction);
 		window.addEventListener('touchmove',initiateInteractionMobile);
+		window.addEventListener("orientationchange", function(e){
+			console.log(e);
+		}, true);
 
 		const wait = setInterval(() => {
 			if(document.querySelector('canvas')){
