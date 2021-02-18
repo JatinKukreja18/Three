@@ -7,8 +7,18 @@
 		<link type="text/css" rel="stylesheet" href="main.css">
 	</head>
 	<script>
-		window.addEventListener('mousemove',function(e){
-			console.log(e.y /window.innerHeight * 100);
+		window.addEventListener('mousemove',initiateInteraction);
+		window.addEventListener('touchmove',initiateInteractionMobile);
+
+		const wait = setInterval(() => {
+			if(document.querySelector('canvas')){
+				clearInterval(wait);
+				document.querySelector('canvas').addEventListener('touchmove',initiateInteractionMobile);
+			}
+		}, 100);
+
+		function initiateInteraction(e){
+			console.log(e);
 			const xoffset = e.x /window.innerWidth * 100;
 			const yoffset = e.y /window.innerHeight * 100;
 			const minLeft = 32;
@@ -26,11 +36,35 @@
 			}
 
 			if(yoffset < 50){
-				document.querySelector('.raw-overlay').style.opacity = 1 - yoffset / 100;
+				document.querySelector('.raw-overlay').style.opacity =  1 - (yoffset/50) ;
 			}else{
 				document.querySelector('.raw-overlay').style.opacity = 0
 			}
-		})
+		}
+		function initiateInteractionMobile(e){
+			console.log(e);
+			const xoffset = e.touches[0].clientX /window.innerWidth * 100;
+			const yoffset = e.touches[0].clientY/window.innerHeight * 100;
+			const minLeft = 32;
+			const maxLeft = 64;
+			const maxTop= 18;
+			const minTop= 3;
+			if((xoffset * maxLeft )/100 + minLeft < maxLeft){
+				document.querySelector('.pupil1').style.left = ((xoffset * maxLeft )/100 + minLeft) + '%';
+				document.querySelector('.pupil2').style.left = ((xoffset * maxLeft )/100 + minLeft) + '%';
+				// document.querySelector('.pupil').style.left = (xoffset * maxLeft )/100 + '%';
+			}
+			if((yoffset * maxTop )/100 + minTop < maxTop){
+				document.querySelector('.pupil1').style.top = ((yoffset * maxTop )/100 + minTop) + '%';
+				document.querySelector('.pupil2').style.top = ((yoffset * maxTop )/100 + minTop) + '%';
+			}
+
+			if(yoffset < 50){
+				document.querySelector('.raw-overlay').style.opacity =  1 - (yoffset/50) ;
+			}else{
+				document.querySelector('.raw-overlay').style.opacity = 0
+			}
+		}
 	</script>
 	<body>
 		<div class="raw-overlay"></div>
@@ -110,7 +144,7 @@
 
 				// model
 				const loader = new FBXLoader();
-				loader.load( 'model/Terrain_6.fbx', function ( object ) {
+				loader.load( 'model/Terrain_5.fbx', function ( object ) {
 
 					// mixer = new THREE.AnimationMixer( object );
 
@@ -143,7 +177,7 @@
 				controls.maxPolarAngle = Math.PI / 2;
 				controls.minDistance = 400
 				controls.maxDistance = 500
-				controls.target.y = 50;
+				controls.target.y = 80;
 				controls.target.x = 100;
 				// camera.autoRotate = true;
 				// controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
